@@ -54,7 +54,7 @@ try
 	$yubikey_params = Yubikey::getParameters();
 	$yubikey_identity = Yubikey::getParameter('identity');
 }
-catch (Exception $e)
+catch (\Exception $e)
 {
 	$error = $e->getMessage();
 }
