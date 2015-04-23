@@ -1,0 +1,31 @@
+{
+    "name": "bitbeans/yubikey",
+    "description": "Yubikey for Laravel 5",
+    "keywords": ["yubikey", "laravel", "laravel5"],
+    "license": "MIT",
+    "version": "1.0.0",
+    "authors": [
+        {
+            "name": "Jonathan Thuau",
+            "email": "jonathan@monarobase.net",
+            "homepage": "http://monarobase.net",
+            "role": "Developer"
+        },
+        {
+            "name": "Christian Hermann",
+            "email": "c.hermann@bitbeans.de",
+            "homepage": "https://github.com/bitbeans",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",        
+        "illuminate/support": "~5"
+    },
+    "autoload": {
+        "psr-0": {
+            "Monarobase\\Yubikey": "src/"
+        }
+    },
+    "minimum-stability": "dev"
+}
