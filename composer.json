@@ -23,8 +23,8 @@
         "illuminate/support": "~5"
     },
     "autoload": {
-        "psr-0": {
-            "Monarobase\\Yubikey": "src/"
+        "psr-4": {
+            "Bitbeans\\Yubikey\\": "src/Bitbeans/Yubikey"
         }
     },
     "minimum-stability": "dev"
