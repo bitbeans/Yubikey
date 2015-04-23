@@ -24,7 +24,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Bitbeans\\Yubikey\\": "src/Bitbeans/Yubikey"
+            "Bitbeans\\Yubikey\\": "src/"
         }
     },
     "minimum-stability": "dev"
