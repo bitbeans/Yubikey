@@ -327,7 +327,7 @@ class Yubikey {
 			throw new \Exception('Could not parse Yubikey OTP');
 		}
 
-		$params = array('id' => $this->_id, 'otp' => $ret['otp'], 'nonce' => md5(uniqid(rand())));
+		$params = array('id' => $this->_id, 'otp' => $ret['otp'], 'nonce' => bin2hex(self::getRandomBytes(16)));
 
 		/* Take care of protocol version 2 parameters */
 		if ($use_timestamp)
@@ -491,7 +491,7 @@ class Yubikey {
 
 							$checksignature = base64_encode(hash_hmac('sha1', utf8_encode($check), $this->_key, true));
 
-							if ($response['h'] == $checksignature)
+							if (self::hashEquals($response['h'], $checksignature))
 							{
 								if ($status == 'REPLAYED_OTP')
 								{
@@ -595,6 +595,123 @@ class Yubikey {
 		}
 
 		throw new \Exception('NO_VALID_ANSWER');
+	}
+	
+	/**
+	 * Compare two hashes in constant time
+	 * 
+	 * @param string $knownString
+	 * @param string $userString
+	 * @return boolean
+	 */
+	protected static function hashEquals($knownString, $userString)
+	{
+		static $exists = null;
+		if ($exists === null) {
+			$exists = \function_exists('\\hash_equals');
+		}
+		if ($exists) {
+			return \hash_equals($knownString, $userString);
+		}
+		
+		$length = self::safeStrlen($knownString);
+		if ($length !== self::safeStrlen($userString)) {
+			return false;
+		}
+		
+		$r = 0;
+		for ($i = 0; $i < $length; ++$i) {
+			$r |= \ord($userString[$i]) ^ \ord($knownString[$i]);
+		}
+		return $r === 0;
+	}
+	
+	/**
+	 * Get a string of cryptographically secure pseudorandom bytes
+	 * 
+	 * @param int $num
+	 * @return string
+	 */
+	protected static function randomBytes($num = 16)
+	{
+		static $which = null;
+		if ($which === null) {
+			if (\function_exists('\\random_bytes') && \version_compare(\phpversion(), '7.0.0', '>=')) {
+				$which = 'php7';
+			} elseif (\function_exists('\\openssl_random_pseudo_bytes')) {
+				$which = 'openssl';
+			} elseif (\function_exists('\\mcrypt_create_iv')) {
+				$which = 'mcrypt';
+			} elseif (\is_readable('/dev/urandom')) {
+				$which = 'urandom';
+			} else {
+				$which = 'fallback';
+			}
+		}
+		
+		if ($num < 1 || $num > PHP_INT_MAX) {
+			return false;
+		}
+		
+		// Now let's get some random bytes
+		switch ($which) {
+			case 'php7':
+				return \random_bytes($num);
+			case 'mcrypt':
+				return \mcrypt_create_iv($num, MCRYPT_DEV_URANDOM);
+			case 'openssl';
+				return \openssl_random_pseudo_bytes($num);
+			case 'urandom':
+				$fp = \fopen('/dev/urandom', 'rb');
+				\stream_set_read_buffer($fp, 0);
+				$bytes = \fread($fp, $num);
+				\fclose($fp);
+				return $bytes;
+			default:
+				// I really hope this is never necessary
+				$bytes = '';
+				for ($i = 0; $i < $num; ++$i) {
+					$bytes .= \chr(\mt_rand(0, 255) ^ \rand(0, 255));
+				}
+				
+				$xorbuf = \sha1(\json_encode($_SERVER), true);
+				while (self::safeStrlen($xorbuf) < $num) {
+					$xorbuf .= \sha1(
+						\uniqid(
+							\md5(
+								\microtime(true) . \lcg_value()
+							), 
+							true
+						),
+						true
+					);
+				}
+				for ($i = 0; $i < $num; ++$i) {
+					$bytes[$i] ^= $xorbuf[$i];
+				}
+				
+				return $bytes;
+		}
+	}
+	
+	/**
+	 * Get the length of a string, irrespective to mbstring.func_overload
+	 * 
+	 * @param string $string
+	 * @return int
+	 */
+	protected static functon safeStrlen($string)
+	{
+		// Optimization -- only search once:
+		static $exists = null;
+		if ($exists === null) {
+			$exists = \function_exists('mb_strlen');
+		}
+		
+		if ($exists) {
+			return \mb_strlen($string, '8bit');
+		}
+		return \strlen($string);
 	}
 
 }
