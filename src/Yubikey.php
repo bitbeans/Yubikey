@@ -606,7 +606,11 @@ class Yubikey {
 	 */
 	protected static function hashEquals($knownString, $userString)
 	{
-		if (!\function_exists('\\hash_equals')) {
+		static $exists = null;
+		if ($exists === null) {
+			$exists = \function_exists('\\hash_equals');
+		}
+		if ($exists) {
 			return \hash_equals($knownString, $userString);
 		}
 		
@@ -632,7 +636,7 @@ class Yubikey {
 	{
 		static $which = null;
 		if ($which === null) {
-			if (\function_exists('\\random_bytes') && \version_compare(phpversion(), '7.0.0', '>=')) {
+			if (\function_exists('\\random_bytes') && \version_compare(\phpversion(), '7.0.0', '>=')) {
 				$which = 'php7';
 			} elseif (\function_exists('\\openssl_random_pseudo_bytes')) {
 				$which = 'openssl';
