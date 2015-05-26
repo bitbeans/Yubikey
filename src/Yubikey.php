@@ -700,7 +700,7 @@ class Yubikey {
 	 * @param string $string
 	 * @return int
 	 */
-	protected static functon safeStrlen($string)
+	protected static function safeStrlen($string)
 	{
 		// Optimization -- only search once:
 		static $exists = null;
