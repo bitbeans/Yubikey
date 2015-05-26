@@ -632,7 +632,7 @@ class Yubikey {
 	 * @param int $num
 	 * @return string
 	 */
-	protected static function randomBytes($num = 16)
+	protected static function getRandomBytes($num = 16)
 	{
 		static $which = null;
 		if ($which === null) {
