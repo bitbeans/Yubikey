@@ -19,10 +19,9 @@ Add `bitbeans/yubikey` to `composer.json`.
 
 Run `composer update` to pull down the latest version of Yubikey.
 
-Now open up `PROJECTFOLDER/config/app.php` and add the service provider to your `providers` array.
+Now open up `/config/app.php` and add the service provider to your `providers` array.
 ```php
 'providers' => [
-    ...
 	Bitbeans\Yubikey\YubikeyServiceProvider::class,
 ]
 ```
@@ -30,7 +29,6 @@ Now open up `PROJECTFOLDER/config/app.php` and add the service provider to your 
 And also the alias.
 ```php
 'aliases' => [
-    ...
 	'Yubikey' => Bitbeans\Yubikey\YubikeyFacade::class,
 ]
 ```
@@ -50,14 +48,11 @@ Run `php artisan vendor:publish` and modify the config file (PROJECTFOLDER/confi
 ```php
 use YubiKey;
 
-try
-{
+try {
 	$yubikey_auth = Yubikey::verify(Input::get('otp'));
 	$yubikey_params = Yubikey::getParameters();
 	$yubikey_identity = Yubikey::getParameter('identity');
-}
-catch (\Exception $e)
-{
+} catch (\Exception $exception) {
 	$error = $e->getMessage();
 }
 ```
