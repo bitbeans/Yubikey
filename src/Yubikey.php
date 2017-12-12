@@ -312,30 +312,21 @@ class Yubikey
 
         while ($URLpart = $this->getNextURLpart()) {
             /* Support https. */
-            if ($this->_https) {
-                $query = "https://";
-            } else {
-                $query = "http://";
-            }
-
+            $query = ($this->_https) ? "https://" : "http://";
             $query .= $URLpart . "?" . $parameters;
-
-            if ($this->_lastquery) {
-                $this->_lastquery .= " ";
-            }
-
+            if ($this->_lastquery)  $this->_lastquery .= " ";
             $this->_lastquery .= $query;
 
             $handle = curl_init($query);
-
             curl_setopt($handle, CURLOPT_USERAGENT, config('yubikey.USER_AGENT'));
             curl_setopt($handle, CURLOPT_RETURNTRANSFER, 1);
             if (!$this->_httpsverify)  curl_setopt($handle, CURLOPT_SSL_VERIFYPEER, 0);
             curl_setopt($handle, CURLOPT_FAILONERROR, true);
 
-            /* If timeout is set, we better apply it here as well
-                 in case the validation server fails to follow it.
-            */
+            /*
+             * If timeout is set, we better apply it here as well
+             * in case the validation server fails to follow it.
+             * */
             if ($timeout)  curl_setopt($handle, CURLOPT_TIMEOUT, $timeout);
             curl_multi_add_handle($mh, $handle);
             $ch[(int)$handle] = $handle;
@@ -348,8 +339,7 @@ class Yubikey
 
         do {
             /* Let curl do its work. */
-            while (($mrc = curl_multi_exec($mh, $active)) == CURLM_CALL_MULTI_PERFORM) ;
-
+            while (($mrc = curl_multi_exec($mh, $active)) == CURLM_CALL_MULTI_PERFORM);
             while ($info = curl_multi_info_read($mh)) {
                 if ($info['result'] == CURLE_OK) {
 
@@ -406,7 +396,6 @@ class Yubikey
                             if (self::hashEquals($response['h'], $checksignature)) {
                                 if ($status == 'REPLAYED_OTP') {
                                     if (!$wait_for_all) $this->_response = $str;
-
                                     $replay = true;
                                 }
 
@@ -480,18 +469,10 @@ class Yubikey
     protected static function hashEquals($knownString, $userString)
     {
         static $exists = null;
-        if ($exists === null) {
-            $exists = \function_exists('\\hash_equals');
-        }
-        if ($exists) {
-            return \hash_equals($knownString, $userString);
-        }
-
+        if ($exists === null)  $exists = \function_exists('\\hash_equals');
+        if ($exists)  return \hash_equals($knownString, $userString);
         $length = self::safeStrlen($knownString);
-        if ($length !== self::safeStrlen($userString)) {
-            return false;
-        }
-
+        if ($length !== self::safeStrlen($userString)) return false;
         $r = 0;
         for ($i = 0; $i < $length; ++$i) {
             $r |= \ord($userString[$i]) ^ \ord($knownString[$i]);
@@ -504,6 +485,7 @@ class Yubikey
      *
      * @param int $num
      * @return string
+     * @throws \Exception
      */
     protected static function getRandomBytes($num = 16)
     {
