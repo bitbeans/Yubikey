@@ -21,16 +21,18 @@ Run `composer update` to pull down the latest version of Yubikey.
 
 Now open up `PROJECTFOLDER/config/app.php` and add the service provider to your `providers` array.
 ```php
-'providers' => array(
-	'Bitbeans\Yubikey\YubikeyServiceProvider',
-)
+'providers' => [
+    ...
+	Bitbeans\Yubikey\YubikeyServiceProvider::class,
+]
 ```
 
 And also the alias.
 ```php
-'aliases' => array(
-	'Yubikey' => 'Bitbeans\Yubikey\YubikeyFacade',
-)
+'aliases' => [
+    ...
+	'Yubikey' => Bitbeans\Yubikey\YubikeyFacade::class,
+]
 ```
 
 You can easily integrate the Yubikey Verification into your authentication system in two steps :
