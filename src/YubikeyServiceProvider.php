@@ -52,10 +52,9 @@ class YubikeyServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-		$this->app['yubikey'] = $this->app->share(function($app)
-		{
-			return new Yubikey;
-		});
+        $this->app->singleton('yubikey', function($app){
+            return new Yubikey;
+        });
 	}
 
 	/**
