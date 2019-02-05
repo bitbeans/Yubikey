@@ -88,16 +88,15 @@ class Yubikey
      * Constructor
      *
      * Sets up the object
-     * @param    array $config The client configuration
      * @access public
      * @throws \Exception
      */
-    public function __construct($config = array())
+    public function __construct()
     {
-        $this->_id = (isset($config['id']) && !empty($config['id'])) ? $id : config('yubikey.CLIENT_ID');
-        $this->_key = base64_decode((isset($config['key']) && !empty($config['key'])) ? $key : config('yubikey.SECRET_KEY'));
-        $this->_https = (isset($config['https'])) ? $config['https'] : 0;
-        $this->_httpsverify = (isset($config['httpsverify'])) ? $config['httpsverify'] : 1;
+        $this->_id = config('yubikey.CLIENT_ID');
+        $this->_key = base64_decode(config('yubikey.SECRET_KEY'));
+        $this->_https = true;
+        $this->_httpsverify = config('yubikey.HTTPS_VERIFY');
 
         if (!$this->_id)  throw new \Exception('Check your CLIENT_ID');
         if (!$this->_key) throw new \Exception('Check your SECRET_KEY');
