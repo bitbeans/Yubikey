@@ -319,7 +319,11 @@ class Yubikey
             $handle = curl_init($query);
             curl_setopt($handle, CURLOPT_USERAGENT, config('yubikey.USER_AGENT'));
             curl_setopt($handle, CURLOPT_RETURNTRANSFER, 1);
-            if (!$this->_httpsverify)  curl_setopt($handle, CURLOPT_SSL_VERIFYPEER, 0);
+            if (!$this->_httpsverify) {
+                curl_setopt($handle, CURLOPT_SSL_VERIFYPEER, 0);
+            } else {
+                curl_setopt($handle, CURLOPT_SSL_VERIFYPEER, true);
+            }
             curl_setopt($handle, CURLOPT_FAILONERROR, true);
 
             /*
@@ -327,7 +331,13 @@ class Yubikey
              * in case the validation server fails to follow it.
              * */
             if ($timeout)  curl_setopt($handle, CURLOPT_TIMEOUT, $timeout);
+
+            if (config('yubikey.CAINFO_LOCATION')) {
+                curl_setopt($handle, CURLOPT_CAINFO, config('yubikey.CAINFO_LOCATION'));
+            }
+
             curl_multi_add_handle($mh, $handle);
+
             $ch[(int)$handle] = $handle;
         }
 
