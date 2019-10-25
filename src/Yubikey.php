@@ -94,8 +94,8 @@ class Yubikey
      */
     public function __construct($config = array())
     {
-        $this->_id = (isset($config['id']) && !empty($config['id'])) ? $id : config('yubikey.CLIENT_ID');
-        $this->_key = base64_decode((isset($config['key']) && !empty($config['key'])) ? $key : config('yubikey.SECRET_KEY'));
+        $this->_id = (isset($config['id']) && !empty($config['id'])) ? $config['id'] : config('yubikey.CLIENT_ID');
+        $this->_key = base64_decode((isset($config['key']) && !empty($config['key'])) ? $config['key'] : config('yubikey.SECRET_KEY'));
         $this->_https = (isset($config['https'])) ? $config['https'] : 0;
         $this->_httpsverify = (isset($config['httpsverify'])) ? $config['httpsverify'] : 1;
 
