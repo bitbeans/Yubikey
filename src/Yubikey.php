@@ -336,6 +336,10 @@ class Yubikey
                 curl_setopt($handle, CURLOPT_CAINFO, config('yubikey.CAINFO_LOCATION'));
             }
 
+            if (config('yubikey.HTTP_PROXY')) {
+                curl_setopt($handle, CURLOPT_PROXY, config('yubikey.HTTP_PROXY'));
+            }
+
             curl_multi_add_handle($mh, $handle);
 
             $ch[(int)$handle] = $handle;
