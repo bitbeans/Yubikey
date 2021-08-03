@@ -18,4 +18,5 @@ return [
     'USER_AGENT'      => 'Laravel 5',
     'HTTPS_VERIFY'    => true,
     'CAINFO_LOCATION' => '',
+    'HTTP_PROXY'      => '',
 ];
